@@ -11,6 +11,12 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        inder: ["Inder", "sans-serif"],
+        gugi: ["Gugi", "sans-serif"],
+        julee: ["Julee", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+      },
     },
   },
   plugins: [],

@@ -1,15 +1,16 @@
-import { Geist, Geist_Mono } from "next/font/google";
+// app/layout.tsx
+import { Inder , Gugi , Julee , Poppins} from "next/font/google";
+
 import "./globals.css";
+import ReduxProvider from "./Redux/provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+
+// استخدام خط Inder كافتراضي
+const inder = Inder({ subsets: ["latin"], weight: "400" });
+const gugi = Gugi({ subsets: ["latin"], weight: "400" });
+const julee = Julee({ subsets: ["latin"], weight: "400" });
+const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
 export const metadata = {
   title: "Create Next App",
@@ -19,10 +20,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inder.className} ${gugi.className} ${julee.className} ${poppins.className} antialiased`}>
+       <ReduxProvider>
         {children}
+       </ReduxProvider>
+   
       </body>
     </html>
   );
