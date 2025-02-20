@@ -20,7 +20,7 @@ import {
 import { CiSearch, CiFilter } from "react-icons/ci";
 import { IoMdPersonAdd } from "react-icons/io";
 import { BiSort } from "react-icons/bi";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete} from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { add, remove } from "../Redux/Slices/dataUploadReducer";
 

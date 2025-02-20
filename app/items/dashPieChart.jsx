@@ -1,6 +1,5 @@
 "use client";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { PieChart } from "@mui/x-charts/PieChart";
 
 // Define platforms data in the same file
