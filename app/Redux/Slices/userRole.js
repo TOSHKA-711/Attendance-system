@@ -1,21 +1,30 @@
+
 import { createSlice } from "@reduxjs/toolkit";
 
-// Get the initial state from localStorage or default to false
-const initialState = {
-  isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
+const getInitialState = () => {
+  if (typeof window !== "undefined") {
+    return {
+      isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
+    };
+  }
+  return { isAdmin: false }; // Default state for SSR
 };
 
 const userRoleSlice = createSlice({
   name: "userRoleSlice",
-  initialState,
+  initialState: getInitialState(),
   reducers: {
     setAdminRole: (state) => {
       state.isAdmin = true;
-      localStorage.setItem("isAdmin", JSON.stringify(true));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("isAdmin", JSON.stringify(true));
+      }
     },
     setStaffRole: (state) => {
       state.isAdmin = false;
-      localStorage.setItem("isAdmin", JSON.stringify(false));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("isAdmin", JSON.stringify(false));
+      }
     },
   },
 });
