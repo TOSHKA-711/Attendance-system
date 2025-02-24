@@ -22,7 +22,6 @@ import { IoMdPersonAdd } from "react-icons/io";
 import { BiSort } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { add} from "../Redux/Slices/dataUploadReducer";
 import {
   useAddStudentAttendanceMutation,
   useDeleteStudentAttendanceMutation,
@@ -30,9 +29,10 @@ import {
 } from "../Redux/features/attendanceApiSlice";
 
 export default function AttendanceTable() {
-  const storedCourse = JSON.parse(
-    localStorage.getItem("selectedCourse") || "{}"
-  );
+  const [storedCourse, setStoredCourse] = useState({});
+  if (typeof window !== "undefined") {
+    storedCourse = JSON.parse(localStorage.getItem("selectedCourse") || "{}");
+  }
   const courseId = storedCourse._id;
   const { data, error, isLoading, refetch } = useGetAllAttendancesQuery(
     courseId,
@@ -118,7 +118,6 @@ export default function AttendanceTable() {
       [name]: value,
     }));
   };
-
 
   // delete user
   const handleDeleteUserAttendance = async (documentId) => {
@@ -308,7 +307,10 @@ export default function AttendanceTable() {
           </Button>
         </div>
       </Box>
-      <button onClick={handleExportToExcel} className="export flex flex-row items-center gap-2 bg-[#FDD05B] text-black py-2 px-3 rounded-lg mb-3">
+      <button
+        onClick={handleExportToExcel}
+        className="export flex flex-row items-center gap-2 bg-[#FDD05B] text-black py-2 px-3 rounded-lg mb-3"
+      >
         Save Excel File
       </button>
     </>
