@@ -9,7 +9,7 @@ const Details = () => {
       <div className="doctorDetails w-full flex flex-row items-center justify-evenly p-5">
         <div className="w-40 h-40 rounded-full overflow-hidden">
           <Image
-            src="/me.jpg"
+            src="/sara.svg"
             alt="Sara Sheehab"
             width={160}
             height={160}
@@ -17,13 +17,13 @@ const Details = () => {
           />
         </div>
         <span className="flex flex-col items-center gap-3">
-          <h1 className="text-4xl font-bold">Ali Mostafa</h1>
+          <h1 className="text-4xl font-bold">SARA</h1>
           <p className="text-3xl text-gray-600">Software Engineering</p>
         </span>
         <div className="flex flex-col items-center gap-3">
           <span className="text-2xl text-gray-700">Staff ID: 2024189</span>
           <span className="flex flex-row items-center gap-9">
-            <p className="text-2xl text-gray-700">Ali@gmail.com</p>
+            <p className="text-2xl text-gray-700">SARA@gmail.com</p>
             <p className="text-2xl text-gray-700">+20 1003394475</p>
           </span>
         </div>

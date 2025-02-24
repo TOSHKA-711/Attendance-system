@@ -179,7 +179,7 @@ export default function StaffTable() {
                       key={row._id}
                       hover
                       sx={{ cursor: "pointer" }}
-                      // onClick={() => router.push(`/dashboard/pages/staff/details/${row._id}`)}
+                      onClick={() => router.push(`/dashboard/pages/staff/details`)}
                     >
                       <TableCell align="left" sx={{ color: "#000" }}>
                         {row._id || "Loading..."}
