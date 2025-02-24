@@ -109,11 +109,11 @@ export default function DocumentTable() {
   };
 
   // add user
-  const handleAddUser = () => {
-    if (window.confirm("Are you sure you want to Add this user?")) {
-      dispatch(add(newUser));
-    }
-  };
+  // const handleAddUser = () => {
+  //   if (window.confirm("Are you sure you want to Add this user?")) {
+  //     dispatch(add(newUser));
+  //   }
+  // };
 
   return (
     <>
@@ -273,7 +273,7 @@ export default function DocumentTable() {
         </div>
       </Box>
       <button
-        onClick={handleAddUser}
+        onClick={handleExportToExcel}
         className="export flex flex-row items-center gap-2 bg-[#FDD05B] text-black py-2 px-3 rounded-lg mb-3"
       >
         Save Excel File

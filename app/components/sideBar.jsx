@@ -9,10 +9,20 @@ import { FaMessage } from "react-icons/fa6";
 import { IoLogOut } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { setStaffRole } from "../Redux/Slices/userRole";
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
+  const router = useRouter();
   const userRole = useSelector((state) => state.userRole.isAdmin);
   const dispatch = useDispatch();
+
+  // handle logout 
+
+  const handleLogout =()=>{
+    localStorage.removeItem("token");
+    router.push("/auth/login")
+
+  }
 
   return (
     <div className="sidebar bg-[#2F897DC4] text-white max-h-screen h-screen flex flex-col items-start justify-between p-4 px-6 pt-36 font-inder sticky top-0 ">
@@ -72,13 +82,13 @@ const Sidebar = () => {
         </Link>
       </span>
       <span className="flex flex-col items-start justify-between">
-        <Link
+        <button
           className="cursor-pointer hover:text-[#F15041] duration-300 gugi.className flex flex-row items-center justify-start gap-5  "
-          href={"/auth/login"}
+          onClick={handleLogout}
         >
           <IoLogOut />
           Logout
-        </Link>
+        </button>
       </span>
     </div>
   );

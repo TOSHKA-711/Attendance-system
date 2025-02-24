@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -8,23 +9,43 @@ import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { setAdminRole, setStaffRole } from "@/app/Redux/Slices/userRole";
-
+import { setAdminRole, setStaffRole, setToken } from "@/app/Redux/Slices/userRole";
+import { useLoginMutation } from "@/app/Redux/features/authApiSlice";
 
 export default function Page() {
-  const userRole = useSelector((state)=>state.userRole.isAdmin)
+  const router = useRouter();
+  const [login, { error, isLoading }] = useLoginMutation();
+  const [user, setUser] = useState({ password: "", username: "" });
   const dispatch = useDispatch();
-  const [role, setRole] = useState(`${userRole ? "admin" : "staff" }`);
-
-
+  const [role, setRole] = useState("staff"); // Default to "staff"
+  
   const handleRoleChange = (event) => {
     const selectedRole = event.target.value;
     setRole(selectedRole);
     selectedRole === "admin" ? dispatch(setAdminRole()) : dispatch(setStaffRole());
   };
 
+  const handleInputsChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
 
+  const handleLogin = async () => {
+    try {
+      const response = await login(user).unwrap();
+      const userRole = response.data.role === "lecturer" ? "staff" : "admin";
+      dispatch(setToken(response.token))
+  
+      console.log("Login successful:", user, response);
 
+      userRole === "admin" ? dispatch(setAdminRole()) : dispatch(setStaffRole());
+
+      router.push(userRole === "admin" ? "/dashboard" : "/dashboard/doctor");
+    } catch (err) {
+      window.alert(`Login failed: ${err.data?.message || "Something went wrong"}`);
+    }
+  };
+  
 
   return (
     <div className="login flex flex-row items-end justify-center w-full h-screen p-5 shadow-[-5px 5px 4px 0px #00000040]">
@@ -37,7 +58,7 @@ export default function Page() {
         <Image src={"/login.svg"} alt="login" height={30} width={100} className="w-full" />
       </div>
       <div className="form w-1/3 border-2 border-slate-500 rounded-lg p-4 flex flex-col items-center gap-7">
-        <FormControl
+      <FormControl
           sx={{
             " .MuiFormGroup-root": {
               flexDirection: "row",
@@ -61,7 +82,7 @@ export default function Page() {
             aria-labelledby="user-role-group"
             name="user-role"
             value={role} // Controlled component
-            onChange={handleRoleChange} // Handle state update
+            onChange={handleRoleChange} 
             className="type flex flex-row items-center justify-between w-full"
           >
             <FormControlLabel value="admin" control={<Radio />} label="Admin" />
@@ -71,19 +92,23 @@ export default function Page() {
         <div className="inputs flex flex-col justify-start gap-8 w-full my-4">
           <span className="w-full relative">
             <p className="font-inder absolute -top-3/4 left-0">Username</p>
-            <input type="text" className="w-full border-2 border-[#2F897D] rounded-md px-1 font-inder text-2xl" />
+            <input type="text" className="w-full border-2 border-[#2F897D] rounded-md px-1 font-inder text-2xl" name="username" value={user.username} onChange={handleInputsChange} />
           </span>
           <span className="w-full relative">
             <p className="font-inder absolute -top-3/4 left-0">Password</p>
-            <input type="password" className="w-full border-2 border-[#2F897D] rounded-md px-1 font-inder text-2xl" />
+            <input type="password" className="w-full border-2 border-[#2F897D] rounded-md px-1 font-inder text-2xl" name="password" value={user.password} onChange={handleInputsChange} />
           </span>
           <span className="flex flex-row items-center gap-3 -mt-4">
             <Checkbox defaultChecked />
             <p>Remember Me</p>
           </span>
         </div>
-        <Link className="bg-[#FDD05B] w-fit p-2 text-2xl -mt-3" href={`${userRole ? "/dashboard" : "/dashboard/doctor" }`}>Sign In</Link>
-        <Link className="text-[#2F897D] text-2xl self-start" href={"/auth/reset"}>Forgot Password?</Link>
+        <button className="bg-[#FDD05B] w-fit p-2 text-2xl -mt-3" onClick={handleLogin} disabled={isLoading}>
+          {isLoading ? "Signing In..." : "Sign In"}
+        </button>
+        <Link className="text-[#2F897D] text-2xl self-start" href={"/auth/reset"}>
+          Forgot Password?
+        </Link>
       </div>
     </div>
   );

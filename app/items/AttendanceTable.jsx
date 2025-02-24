@@ -20,22 +20,41 @@ import {
 import { CiSearch, CiFilter } from "react-icons/ci";
 import { IoMdPersonAdd } from "react-icons/io";
 import { BiSort } from "react-icons/bi";
-import { MdDelete} from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
-import { add, remove } from "../Redux/Slices/dataUploadReducer";
+import { MdDelete } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { add} from "../Redux/Slices/dataUploadReducer";
+import {
+  useAddStudentAttendanceMutation,
+  useDeleteStudentAttendanceMutation,
+  useGetAllAttendancesQuery,
+} from "../Redux/features/attendanceApiSlice";
 
 export default function AttendanceTable() {
+  const storedCourse = JSON.parse(
+    localStorage.getItem("selectedCourse") || "{}"
+  );
+  const courseId = storedCourse._id;
+  const { data, error, isLoading, refetch } = useGetAllAttendancesQuery(
+    courseId,
+    {
+      skip: !courseId,
+    }
+  );
+  const [deleteAttendance] = useDeleteStudentAttendanceMutation();
+  const [addAttendance] = useAddStudentAttendanceMutation();
+
+  // console.log("Fetched Data:", data);
+
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [newUser, setNewUser] = useState({
-    ID: "",
-    Name: "",
-    Department: "",
-    RecordedMaterials: "",
+    student: "",
+    sessionID: courseId,
+    attendanceStatus: "",
   });
-  const users = useSelector((state) => state.dataUpload) || []; // Ensure it's always an array
+  const users = data?.attendances || [];
 
   const isSmallScreen = useMediaQuery("(max-width:930px)");
 
@@ -43,9 +62,9 @@ export default function AttendanceTable() {
     if (!Array.isArray(users)) return [];
 
     return users.filter((user) => {
-      const name = user?.Name?.toLowerCase() || "";
-      const department = user?.Department?.toLowerCase() || "";
-      const id = user?.ID ? String(user.ID) : "";
+      const name = user?.student.name?.toLowerCase() || "";
+      const department = user?.courseId?.courseName.toLowerCase() || "";
+      const id = user?.student._id ? String(user?.student._id) : "";
 
       return (
         name.includes(searchTerm.toLowerCase()) ||
@@ -61,14 +80,6 @@ export default function AttendanceTable() {
       page * rowsPerPage + rowsPerPage
     );
   }, [page, rowsPerPage, filteredUsers]);
-
-  // delete from table
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      dispatch(remove(id));
-    }
-  };
 
   // save file
 
@@ -108,12 +119,35 @@ export default function AttendanceTable() {
     }));
   };
 
-  // add user
-  const handleAddUser = () => {
-    if (window.confirm("Are you sure you want to Add this user?")) {
-      dispatch(add(newUser));
+
+  // delete user
+  const handleDeleteUserAttendance = async (documentId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        await deleteAttendance(documentId);
+        refetch();
+      } catch (err) {
+        console.error("Failed to delete attendance:", err);
+      }
     }
   };
+  const handleAddUserAttendance = async () => {
+    if (window.confirm("Are you sure you want to Add this user?")) {
+      try {
+        console.log(newUser);
+        console.log(localStorage.getItem("token")?.replace(/"/g, ""));
+        await addAttendance(newUser);
+        refetch();
+      } catch (err) {
+        console.error("Failed to delete attendance:", err);
+      }
+    }
+  };
+
+  // handle fetch students
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error fetching attendance data</p>;
 
   return (
     <>
@@ -167,7 +201,7 @@ export default function AttendanceTable() {
                     Recorded Materials
                   </TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
-                    Department
+                    Status
                   </TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
                     Actions
@@ -175,34 +209,36 @@ export default function AttendanceTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {visibleRows.map((row, index) => (
-                  <TableRow key={row.ID} hover sx={{ cursor: "pointer" }}>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ color: "#000" }}
-                    >
-                      {row.ID}
-                    </TableCell>
-                    <TableCell align="left" sx={{ color: "#000" }}>
-                      {row.Name}
-                    </TableCell>
-                    <TableCell align="center" sx={{ color: "#000" }}>
-                      {row.RecordedMaterials}
-                    </TableCell>
-                    <TableCell align="center" sx={{ color: "#000" }}>
-                      {row.Department}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        onClick={() => handleDelete(row.ID)}
-                        sx={{ color: "#D32F2F" }}
+                {visibleRows
+                  .filter((row) => row.student)
+                  .map((row) => (
+                    <TableRow key={row._id} hover sx={{ cursor: "pointer" }}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ color: "#000" }}
                       >
-                        <MdDelete size={20} />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        {row.student._id}
+                      </TableCell>
+                      <TableCell align="left" sx={{ color: "#000" }}>
+                        {row.student.name}
+                      </TableCell>
+                      <TableCell align="center" sx={{ color: "#000" }}>
+                        {row.courseId?.courseName}
+                      </TableCell>
+                      <TableCell align="center" sx={{ color: "#000" }}>
+                        {row.attendanceStatus}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          onClick={() => handleDeleteUserAttendance(row._id)}
+                          sx={{ color: "#D32F2F" }}
+                        >
+                          <MdDelete size={20} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -226,56 +262,53 @@ export default function AttendanceTable() {
         </Paper>
         <div className="add bg-[#27CDA55C] flex flex-row items-center justify-between border-black border-2 mb-4">
           <input
-            name="ID"
-            value={newUser.ID || ""}
+            name="student"
+            value={newUser.student || ""}
             onChange={handleInputChange}
             type="text"
             placeholder="Id"
-            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
+            className="bg-[#27CDA55C] py-3 px-2 w-full outline-none border-black border-l-2"
           />
-          <input
-            name="Name"
-            value={newUser.Name || ""}
+          {/* <input
+            name="sessionID"
+            value={newUser.sessionID || ""}
             onChange={handleInputChange}
             type="text"
             placeholder="Name"
             className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
-          />
-          <input
+          /> */}
+          {/* <input
             name="RecordedMaterials"
             value={newUser.RecordedMaterials || ""}
             onChange={handleInputChange}
             type="text"
             placeholder="Recorded Materials"
             className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
-          />
+          /> */}
           <input
-            name="Department"
-            value={newUser.Department || ""}
+            name="attendanceStatus"
+            value={newUser.attendanceStatus || ""}
             onChange={handleInputChange}
             type="text"
-            placeholder="Department"
-            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
+            placeholder="Status"
+            className="bg-[#27CDA55C] py-3 px-2 w-full outline-none border-black border-l-2"
           />
 
           <Button
-            onClick={() => dispatch(add(newUser))}
+            onClick={handleAddUserAttendance}
             sx={{
               color: "#000",
               borderLeft: "2px solid black",
               borderRadius: "0px !important",
             }}
-            className="w-1/5 border-black border-l-2"
+            className="w-3/5 border-black border-l-2"
           >
             <IoMdPersonAdd size={20} />
             Add
           </Button>
         </div>
       </Box>
-      <button
-        onClick={handleAddUser}
-        className="export flex flex-row items-center gap-2 bg-[#FDD05B] text-black py-2 px-3 rounded-lg mb-3"
-      >
+      <button onClick={handleExportToExcel} className="export flex flex-row items-center gap-2 bg-[#FDD05B] text-black py-2 px-3 rounded-lg mb-3">
         Save Excel File
       </button>
     </>

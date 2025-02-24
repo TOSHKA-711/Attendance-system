@@ -1,33 +1,41 @@
-
 import { createSlice } from "@reduxjs/toolkit";
 
-const getInitialState = () => {
-  if (typeof window !== "undefined") {
-    return {
-      isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
-    };
-  }
-  return { isAdmin: false }; // Default state for SSR
+const initialState = {
+  isAdmin: false,
+  token: "",
 };
 
 const userRoleSlice = createSlice({
-  name: "userRoleSlice",
-  initialState: getInitialState(),
+  name: "userRole",
+  initialState,
   reducers: {
+    hydrateUserRole: (state) => {
+      if (typeof window !== "undefined") {
+        state.isAdmin = localStorage.getItem("isAdmin") === "true"; // Store as string
+        state.token = localStorage.getItem("token") || "";
+      }
+    },
     setAdminRole: (state) => {
       state.isAdmin = true;
       if (typeof window !== "undefined") {
-        localStorage.setItem("isAdmin", JSON.stringify(true));
+        localStorage.setItem("isAdmin", "true");
       }
     },
     setStaffRole: (state) => {
       state.isAdmin = false;
       if (typeof window !== "undefined") {
-        localStorage.setItem("isAdmin", JSON.stringify(false));
+        localStorage.setItem("isAdmin", "false");
+      }
+    },
+    setToken: (state, action) => {
+      state.token = action.payload;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", action.payload);
       }
     },
   },
 });
 
-export const { setAdminRole, setStaffRole } = userRoleSlice.actions;
+export const { setAdminRole, setStaffRole, setToken, hydrateUserRole } =
+  userRoleSlice.actions;
 export default userRoleSlice.reducer;

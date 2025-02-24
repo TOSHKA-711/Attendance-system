@@ -1,14 +1,12 @@
 import Image from "next/image";
 import React from "react";
-
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import Checkbox from '@mui/material/Checkbox';
 import Link from "next/link";
 
 export default function page() {
+
+ 
+
+
   return (
     <div className="login flex flex-row items-end justify-center  w-full h-screen p-5 shadow-[-5px 5px 4px 0px #00000040] ">
            <div className="wel-nav bg-[#17272F] w-full flex flex-row items-center justify-center gap-9 px-4 py-4 absolute top-0 left-0  ">
