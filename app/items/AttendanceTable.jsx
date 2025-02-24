@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState , useEffect} from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -30,9 +30,12 @@ import {
 
 export default function AttendanceTable() {
   const [storedCourse, setStoredCourse] = useState({});
-  if (typeof window !== "undefined") {
-    storedCourse = JSON.parse(localStorage.getItem("selectedCourse") || "{}");
-  }
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const course = JSON.parse(localStorage.getItem("selectedCourse") || "{}");
+      setStoredCourse(course);
+    }
+  }, []);
   const courseId = storedCourse._id;
   const { data, error, isLoading, refetch } = useGetAllAttendancesQuery(
     courseId,
