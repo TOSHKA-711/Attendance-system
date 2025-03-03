@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState , useEffect} from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -20,15 +20,22 @@ import {
 import { CiSearch, CiFilter } from "react-icons/ci";
 import { IoMdPersonAdd } from "react-icons/io";
 import { BiSort } from "react-icons/bi";
-import { MdDelete } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { IoPersonAddSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useAddStudentAttendanceMutation,
-  useDeleteStudentAttendanceMutation,
   useGetAllAttendancesQuery,
 } from "../Redux/features/attendanceApiSlice";
 
 export default function AttendanceTable() {
+  const sessionId = useSelector((state) => state.selectedCourse.sessionId);
+  const lecturerRole = useSelector((state) => state.userRole.isInstructor);
+  const token =
+  typeof window !== "undefined"
+    ? window.localStorage.getItem("token")?.replace(/"/g, "")
+    : null;
+  console.log("isInstructor=>>>>>", lecturerRole);
+  console.log("token=>>>>>", token);
   const [storedCourse, setStoredCourse] = useState({});
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -43,9 +50,10 @@ export default function AttendanceTable() {
       skip: !courseId,
     }
   );
-  const [deleteAttendance] = useDeleteStudentAttendanceMutation();
-  const [addAttendance] = useAddStudentAttendanceMutation();
+  const [addStudentAttendance, { isLoading: isLoadingAdding }] =
+    useAddStudentAttendanceMutation();
 
+  console.log(data?.students);
   // console.log("Fetched Data:", data);
 
   const dispatch = useDispatch();
@@ -57,7 +65,7 @@ export default function AttendanceTable() {
     sessionID: courseId,
     attendanceStatus: "",
   });
-  const users = data?.attendances || [];
+  const users = data?.students || [];
 
   const isSmallScreen = useMediaQuery("(max-width:930px)");
 
@@ -114,37 +122,35 @@ export default function AttendanceTable() {
 
   // handle input change
 
-  const handleInputChange = (e) => {
-    const { value, name } = e.target;
-    setNewUser((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
-  // delete user
-  const handleDeleteUserAttendance = async (documentId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+  // add user attendance
+  const handleAddUserAttendance = async (row) => {
+    if (window.confirm("Are you sure you want to add this user?")) {
       try {
-        await deleteAttendance(documentId);
+        const newAttendance = {
+          student: row.student?._id,
+          sessionID: sessionId,
+          attendanceStatus: "present",
+          sessionType: lecturerRole === "instructor" ? "lecture" : "section",
+        };
+  
+        console.log("New Attendance Payload:", newAttendance);
+        console.log("Course ID being sent:", storedCourse);
+  
+        const response = await addStudentAttendance({
+          courseId: storedCourse,  // Ensure this is a valid string ID
+          newUser: newAttendance,
+        });
+  
+        console.log("Attendance Added Response:", response);
+        window.alert(response?.data?.message)
         refetch();
       } catch (err) {
-        console.error("Failed to delete attendance:", err);
+        console.error("Failed to add attendance:", err);
       }
     }
   };
-  const handleAddUserAttendance = async () => {
-    if (window.confirm("Are you sure you want to Add this user?")) {
-      try {
-        console.log(newUser);
-        console.log(localStorage.getItem("token")?.replace(/"/g, ""));
-        await addAttendance(newUser);
-        refetch();
-      } catch (err) {
-        console.error("Failed to delete attendance:", err);
-      }
-    }
-  };
+  
 
   // handle fetch students
 
@@ -200,10 +206,10 @@ export default function AttendanceTable() {
                   <TableCell sx={{ color: "#000" }}>Student ID</TableCell>
                   <TableCell sx={{ color: "#000" }}>Name</TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
-                    Recorded Materials
+                    Department
                   </TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
-                    Status
+                    Attendance
                   </TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
                     Actions
@@ -214,29 +220,36 @@ export default function AttendanceTable() {
                 {visibleRows
                   .filter((row) => row.student)
                   .map((row) => (
-                    <TableRow key={row._id} hover sx={{ cursor: "pointer" }}>
+                    <TableRow key={row._id || row.student._id} hover sx={{ cursor: "pointer" }}>
                       <TableCell
                         component="th"
                         scope="row"
                         sx={{ color: "#000" }}
                       >
-                        {row.student._id}
+                        {row.student.studentID}
                       </TableCell>
                       <TableCell align="left" sx={{ color: "#000" }}>
                         {row.student.name}
                       </TableCell>
+                      {/* <TableCell align="center" sx={{ color: "#000" }}>
+                        {row.student?.courses?.courseName}
+                      </TableCell> */}
                       <TableCell align="center" sx={{ color: "#000" }}>
-                        {row.courseId?.courseName}
+                        {row.student?.department}
                       </TableCell>
                       <TableCell align="center" sx={{ color: "#000" }}>
-                        {row.attendanceStatus}
+                        {row.studentAttendanc}
                       </TableCell>
                       <TableCell align="center">
                         <Button
-                          onClick={() => handleDeleteUserAttendance(row._id)}
+                          onClick={() => handleAddUserAttendance(row)}
                           sx={{ color: "#D32F2F" }}
+                          disabled={isLoadingAdding}
                         >
-                          <MdDelete size={20} />
+                          <IoPersonAddSharp
+                            className="text-green-500"
+                            size={20}
+                          />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -262,53 +275,6 @@ export default function AttendanceTable() {
             }}
           />
         </Paper>
-        <div className="add bg-[#27CDA55C] flex flex-row items-center justify-between border-black border-2 mb-4">
-          <input
-            name="student"
-            value={newUser.student || ""}
-            onChange={handleInputChange}
-            type="text"
-            placeholder="Id"
-            className="bg-[#27CDA55C] py-3 px-2 w-full outline-none border-black border-l-2"
-          />
-          {/* <input
-            name="sessionID"
-            value={newUser.sessionID || ""}
-            onChange={handleInputChange}
-            type="text"
-            placeholder="Name"
-            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
-          /> */}
-          {/* <input
-            name="RecordedMaterials"
-            value={newUser.RecordedMaterials || ""}
-            onChange={handleInputChange}
-            type="text"
-            placeholder="Recorded Materials"
-            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
-          /> */}
-          <input
-            name="attendanceStatus"
-            value={newUser.attendanceStatus || ""}
-            onChange={handleInputChange}
-            type="text"
-            placeholder="Status"
-            className="bg-[#27CDA55C] py-3 px-2 w-full outline-none border-black border-l-2"
-          />
-
-          <Button
-            onClick={handleAddUserAttendance}
-            sx={{
-              color: "#000",
-              borderLeft: "2px solid black",
-              borderRadius: "0px !important",
-            }}
-            className="w-3/5 border-black border-l-2"
-          >
-            <IoMdPersonAdd size={20} />
-            Add
-          </Button>
-        </div>
       </Box>
       <button
         onClick={handleExportToExcel}

@@ -5,46 +5,40 @@ export const attendanceApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl:
       "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
-    credentials: "include", // ✅ Ensures authentication (especially with cookies)
+    credentials: "include",
     prepareHeaders: (headers) => {
-      const token =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem("token")?.replace(/"/g, "")
-          : null;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("token")?.replace(/"/g, "");
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
       }
       return headers;
     },
   }),
-  tagTypes: ["Attendance"], // ✅ Enables cache invalidation
+  tagTypes: ["Attendance"],
   endpoints: (builder) => ({
     getAllAttendances: builder.query({
-      query: (courseId) => `/report/${courseId}`,
-      providesTags: ["Attendance"], // ✅ Marks query data with "Attendance" tag
+      query: (courseId) => `/showStudent/${courseId}`,
+      providesTags: ["Attendance"],
     }),
 
     addStudentAttendance: builder.mutation({
-      query: (newUser) => ({
+      query: ({ courseId, newUser }) => ({
         url: `/attendances`,
         method: "POST",
         body: newUser,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
-      invalidatesTags: ["Attendance"], // ✅ Triggers refetching when new data is added
+      invalidatesTags: ["Attendance"],
     }),
-
-    deleteStudentAttendance: builder.mutation({
-      query: (documentId) => ({
-        url: `/attendances/${documentId}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Attendance"], // ✅ Ensures the deleted item is removed from UI
-    }),
+    
   }),
 });
 
 export const {
   useGetAllAttendancesQuery,
-  useDeleteStudentAttendanceMutation,
   useAddStudentAttendanceMutation,
 } = attendanceApiSlice;

@@ -6,7 +6,7 @@ const baseQuery = fetchBaseQuery({
     let token = "";
     if (typeof window !== "undefined") {
       token = localStorage.getItem("token")?.replace(/"/g, "") || "";
-      console.log("Token in Headers:", token); // Debugging line
+      console.log("Token in Headers:", token); 
     }
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
@@ -33,7 +33,7 @@ export const sessionApiSlice = createApi({
 
     getQrCode: builder.mutation({
       query: (sessionId) => ({
-        url: `/${sessionId}/qrcode`,  // ✅ Fixed incorrect query structure
+        url: `/${sessionId}/qrcode`,  
         method: "GET",
       }),
       providesTags: ["Session"],
