@@ -28,15 +28,19 @@ import {
 } from "../Redux/features/attendanceApiSlice";
 
 export default function AttendanceTable() {
+  const [isRendered, setIsRendered] = useState(false);
   const sessionId = useSelector((state) => state.selectedCourse.sessionId);
   const lecturerRole = useSelector((state) => state.userRole.isInstructor);
   const token =
-  typeof window !== "undefined"
-    ? window.localStorage.getItem("token")?.replace(/"/g, "")
-    : null;
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("token")?.replace(/"/g, "")
+      : null;
   console.log("isInstructor=>>>>>", lecturerRole);
   console.log("token=>>>>>", token);
   const [storedCourse, setStoredCourse] = useState({});
+  useEffect(() => {
+    setIsRendered(true);
+  }, []);
   useEffect(() => {
     if (typeof window !== "undefined") {
       const course = JSON.parse(localStorage.getItem("selectedCourse") || "{}");
@@ -122,7 +126,6 @@ export default function AttendanceTable() {
 
   // handle input change
 
-
   // add user attendance
   const handleAddUserAttendance = async (row) => {
     if (window.confirm("Are you sure you want to add this user?")) {
@@ -133,27 +136,27 @@ export default function AttendanceTable() {
           attendanceStatus: "present",
           sessionType: lecturerRole === "instructor" ? "lecture" : "section",
         };
-  
+
         console.log("New Attendance Payload:", newAttendance);
         console.log("Course ID being sent:", storedCourse);
-  
+
         const response = await addStudentAttendance({
-          courseId: storedCourse,  // Ensure this is a valid string ID
+          courseId: storedCourse, // Ensure this is a valid string ID
           newUser: newAttendance,
         });
-  
+
         console.log("Attendance Added Response:", response);
-        window.alert(response?.data?.message)
+        window.alert(response?.data?.message);
         refetch();
       } catch (err) {
         console.error("Failed to add attendance:", err);
       }
     }
   };
-  
 
   // handle fetch students
-
+  
+  if (!isRendered) return null;
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error fetching attendance data</p>;
 
@@ -220,7 +223,11 @@ export default function AttendanceTable() {
                 {visibleRows
                   .filter((row) => row.student)
                   .map((row) => (
-                    <TableRow key={row._id || row.student._id} hover sx={{ cursor: "pointer" }}>
+                    <TableRow
+                      key={row._id || row.student._id}
+                      hover
+                      sx={{ cursor: "pointer" }}
+                    >
                       <TableCell
                         component="th"
                         scope="row"

@@ -4,8 +4,8 @@ export const authApiSlice = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode/auth",
-    credentials: "include", 
+      "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode/auth",
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     login: builder.mutation({

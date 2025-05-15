@@ -3,8 +3,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const usersApiSlice = createApi({
   reducerPath: "usersApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
-    credentials: "include", // 
+    baseUrl:
+      "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
+    credentials: "include", //
     prepareHeaders: (headers) => {
       if (typeof window !== "undefined") {
         const token = localStorage.getItem("token")?.replace(/"/g, "");
@@ -15,11 +16,11 @@ export const usersApiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Users"], 
+  tagTypes: ["Users"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => `/users`,
-      providesTags: ["Users"], 
+      providesTags: ["Users"],
     }),
 
     deleteStaffUser: builder.mutation({
@@ -36,13 +37,13 @@ export const usersApiSlice = createApi({
         method: "POST",
         body: user,
       }),
-      invalidatesTags: ["Users"], 
+      invalidatesTags: ["Users"],
     }),
   }),
 });
 
-export const { 
-  useGetAllUsersQuery, 
-  useDeleteStaffUserMutation, 
-  useAddStaffUserMutation 
+export const {
+  useGetAllUsersQuery,
+  useDeleteStaffUserMutation,
+  useAddStaffUserMutation,
 } = usersApiSlice;

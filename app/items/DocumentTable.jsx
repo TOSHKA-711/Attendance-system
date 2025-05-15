@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -20,22 +20,31 @@ import {
 import { CiSearch, CiFilter } from "react-icons/ci";
 import { IoMdPersonAdd } from "react-icons/io";
 import { BiSort } from "react-icons/bi";
-import { MdDelete} from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { add, remove } from "../Redux/Slices/dataUploadReducer";
 
 export default function DocumentTable() {
+  const [isRendered, setIsRendered] = useState(false);
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [newUser, setNewUser] = useState({
-    ID: "",
-    Name: "",
-    Department: "",
-    RecordedMaterials: "",
+    name: "",
+    email: "",
+    department: "",
+    level: "",
+    password: "",
+    passwordConfirm: "",
   });
-  const users = useSelector((state) => state.dataUpload) || []; // Ensure it's always an array
+
+  useEffect(() => {
+    setIsRendered(true);
+  }, []);
+
+  const users = useSelector((state) => state.dataUpload) || [];
+  console.log("dddddddddd", users);
 
   const isSmallScreen = useMediaQuery("(max-width:930px)");
 
@@ -43,14 +52,16 @@ export default function DocumentTable() {
     if (!Array.isArray(users)) return [];
 
     return users.filter((user) => {
-      const name = user?.Name?.toLowerCase() || "";
-      const department = user?.Department?.toLowerCase() || "";
-      const id = user?.ID ? String(user.ID) : "";
+      const name = user?.name?.toLowerCase() || "";
+      const department = user?.department?.toLowerCase() || "";
+      const email = user?.email?.toLowerCase() || "";
+      const level = user?.level ? String(user.level) : "";
 
       return (
         name.includes(searchTerm.toLowerCase()) ||
         department.includes(searchTerm.toLowerCase()) ||
-        id.includes(searchTerm)
+        email.includes(searchTerm.toLowerCase()) ||
+        level.includes(searchTerm)
       );
     });
   }, [searchTerm, users]);
@@ -115,6 +126,10 @@ export default function DocumentTable() {
   //   }
   // };
 
+  if (!isRendered) {
+    return null;
+  }
+
   return (
     <>
       <Box sx={{ width: "100%", position: "relative" }}>
@@ -161,13 +176,22 @@ export default function DocumentTable() {
             >
               <TableHead className={`table-head ${isSmallScreen && "hidden"}`}>
                 <TableRow>
-                  <TableCell sx={{ color: "#000" }}>Student ID</TableCell>
+                  {/* <TableCell sx={{ color: "#000" }}>Student ID</TableCell> */}
                   <TableCell sx={{ color: "#000" }}>Name</TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
-                    Recorded Materials
+                    Email
                   </TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
                     Department
+                  </TableCell>
+                  <TableCell align="center" sx={{ color: "#000" }}>
+                    Level
+                  </TableCell>
+                  <TableCell align="center" sx={{ color: "#000" }}>
+                    Password
+                  </TableCell>
+                  <TableCell align="center" sx={{ color: "#000" }}>
+                    Password confirmation
                   </TableCell>
                   <TableCell align="center" sx={{ color: "#000" }}>
                     Actions
@@ -176,26 +200,28 @@ export default function DocumentTable() {
               </TableHead>
               <TableBody>
                 {visibleRows.map((row, index) => (
-                  <TableRow key={row.ID} hover sx={{ cursor: "pointer" }}>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ color: "#000" }}
-                    >
-                      {row.ID}
-                    </TableCell>
+                  <TableRow key={index} hover sx={{ cursor: "pointer" }}>
                     <TableCell align="left" sx={{ color: "#000" }}>
-                      {row.Name}
+                      {row.name}
                     </TableCell>
                     <TableCell align="center" sx={{ color: "#000" }}>
-                      {row.RecordedMaterials}
+                      {row.email}
                     </TableCell>
                     <TableCell align="center" sx={{ color: "#000" }}>
-                      {row.Department}
+                      {row.department}
+                    </TableCell>
+                    <TableCell align="center" sx={{ color: "#000" }}>
+                      {row.level}
+                    </TableCell>
+                    <TableCell align="center" sx={{ color: "#000" }}>
+                      {row.password}
+                    </TableCell>
+                    <TableCell align="center" sx={{ color: "#000" }}>
+                      {row.passwordConfirm}
                     </TableCell>
                     <TableCell align="center">
                       <Button
-                        onClick={() => handleDelete(row.ID)}
+                        onClick={() => handleDelete(index)}
                         sx={{ color: "#D32F2F" }}
                       >
                         <MdDelete size={20} />
@@ -226,38 +252,53 @@ export default function DocumentTable() {
         </Paper>
         <div className="add bg-[#27CDA55C] flex flex-row items-center justify-between border-black border-2 mb-4">
           <input
-            name="ID"
-            value={newUser.ID || ""}
-            onChange={handleInputChange}
-            type="text"
-            placeholder="Id"
-            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
-          />
-          <input
-            name="Name"
-            value={newUser.Name || ""}
+            name="name"
+            value={newUser.name || ""}
             onChange={handleInputChange}
             type="text"
             placeholder="Name"
             className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
           />
           <input
-            name="RecordedMaterials"
-            value={newUser.RecordedMaterials || ""}
+            name="email"
+            value={newUser.email || ""}
             onChange={handleInputChange}
             type="text"
             placeholder="Recorded Materials"
             className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
           />
           <input
-            name="Department"
-            value={newUser.Department || ""}
+            name="department"
+            value={newUser.department || ""}
             onChange={handleInputChange}
             type="text"
             placeholder="Department"
             className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
           />
-
+          <input
+            name="level"
+            value={newUser.level || ""}
+            onChange={handleInputChange}
+            type="number"
+            placeholder="Department"
+            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
+          />
+          <input
+            name="password"
+            value={newUser.password || ""}
+            onChange={handleInputChange}
+            type="text"
+            placeholder="Password"
+            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
+          />
+          <input
+            name="passwordConfirm"
+            value={newUser.passwordConfirm || ""}
+            onChange={handleInputChange}
+            type="text"
+            placeholder="Password Confirm"
+            className="bg-[#27CDA55C] py-3 px-2 w-1/5 outline-none border-black border-l-2"
+          />
           <Button
             onClick={() => dispatch(add(newUser))}
             sx={{

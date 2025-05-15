@@ -4,7 +4,7 @@ export const attendanceApiSlice = createApi({
   reducerPath: "attendanceApi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
+      "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
     credentials: "include",
     prepareHeaders: (headers) => {
       if (typeof window !== "undefined") {
@@ -34,11 +34,19 @@ export const attendanceApiSlice = createApi({
       }),
       invalidatesTags: ["Attendance"],
     }),
-    
+    addStudentsSheet: builder.mutation({
+      query: (users) => ({
+        url: `/studentInfo`,
+        method: "POST",
+        body: users,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Attendance"],
+    }),
   }),
 });
 
-export const {
-  useGetAllAttendancesQuery,
-  useAddStudentAttendanceMutation,
-} = attendanceApiSlice;
+export const { useGetAllAttendancesQuery, useAddStudentAttendanceMutation , useAddStudentsSheetMutation } =
+  attendanceApiSlice;

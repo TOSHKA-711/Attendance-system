@@ -1,12 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode/sessions",
+  baseUrl:
+    "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode/sessions",
   prepareHeaders: (headers) => {
     let token = "";
     if (typeof window !== "undefined") {
       token = localStorage.getItem("token")?.replace(/"/g, "") || "";
-      console.log("Token in Headers:", token); 
+      console.log("Token in Headers:", token);
     }
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
@@ -33,7 +34,7 @@ export const sessionApiSlice = createApi({
 
     getQrCode: builder.mutation({
       query: (sessionId) => ({
-        url: `/${sessionId}/qrcode`,  
+        url: `/${sessionId}/qrcode`,
         method: "GET",
       }),
       providesTags: ["Session"],
@@ -41,4 +42,5 @@ export const sessionApiSlice = createApi({
   }),
 });
 
-export const { useCreateSessionMutation, useGetQrCodeMutation } = sessionApiSlice;
+export const { useCreateSessionMutation, useGetQrCodeMutation } =
+  sessionApiSlice;
