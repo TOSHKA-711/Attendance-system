@@ -8,7 +8,6 @@ import { SlCalender } from "react-icons/sl";
 import { FaMessage } from "react-icons/fa6";
 import { IoLogOut } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { setStaffRole } from "../Redux/Slices/userRole";
 import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
@@ -48,13 +47,7 @@ const Sidebar = () => {
               <FaFolder />
               Documents
             </Link>
-            <Link
-          className="cursor-pointer hover:text-[#17272F] duration-300 gugi.className flex flex-row items-center justify-start gap-5  "
-          href={"/dashboard/pages/report"}
-        >
-          <SlCalender />
-          Report
-        </Link>
+    
           </>
         ) : (
           <>
@@ -70,6 +63,13 @@ const Sidebar = () => {
             >
               <MdPeopleAlt /> Apology for attendance
             </Link>
+            <Link
+          className="cursor-pointer hover:text-[#17272F] duration-300 gugi.className flex flex-row items-center justify-start gap-5  "
+          href={"/dashboard/pages/report"}
+        >
+          <SlCalender />
+          Report
+        </Link>
           </>
         )}
 
