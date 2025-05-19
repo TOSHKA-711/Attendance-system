@@ -4,7 +4,7 @@ export const attendanceApiSlice = createApi({
   reducerPath: "attendanceApi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
+      "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
     credentials: "include",
     prepareHeaders: (headers) => {
       if (typeof window !== "undefined") {
@@ -48,5 +48,8 @@ export const attendanceApiSlice = createApi({
   }),
 });
 
-export const { useGetAllAttendancesQuery, useAddStudentAttendanceMutation , useAddStudentsSheetMutation } =
-  attendanceApiSlice;
+export const {
+  useGetAllAttendancesQuery,
+  useAddStudentAttendanceMutation,
+  useAddStudentsSheetMutation,
+} = attendanceApiSlice;

@@ -1,17 +1,15 @@
-"use client"; // إذا كنت تستخدم Next.js 13+ مع App Router
-
+"use client";
 import React from "react";
 
-const CustomCircularProgress = ({ value, size = 100, strokeWidth = 10 }) => {
+const CustomCircularProgress = ({ percentage, size = 100, strokeWidth = 10 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = (value / 100) * circumference;
+  const progress = (percentage / 100) * circumference;
 
   return (
     <div style={{ textAlign: "center" }}>
       <div style={{ position: "relative", width: size, height: size, margin: "auto" }}>
         <svg width={size} height={size}>
-        
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -20,7 +18,6 @@ const CustomCircularProgress = ({ value, size = 100, strokeWidth = 10 }) => {
             strokeWidth={strokeWidth}
             fill="none"
           />
-   
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -34,27 +31,25 @@ const CustomCircularProgress = ({ value, size = 100, strokeWidth = 10 }) => {
             style={{ transition: "stroke-dashoffset 0.5s ease" }}
           />
         </svg>
-        {/* النسبة المئوية في المنتصف */}
         <div
           style={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            fontSize: `${size * 0.18}px`, // حجم النص يعتمد على حجم الدائرة
+            fontSize: `${size * 0.18}px`,
             fontWeight: "bold",
             color: "black",
           }}
         >
-          {`${Math.round(value)}%`}
+          {`${Math.round(percentage)}%`}
         </div>
       </div>
 
-      {/* التسميات تحت الدائرة */}
       <div style={{ display: "flex", justifyContent: "center", gap: "15px", marginTop: "10px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
           <span style={{ width: "12px", height: "12px", backgroundColor: "#2FDB7D", display: "inline-block", borderRadius: "2px" }}></span>
-          <span style={{ fontSize: "14px", color: "#333" }}>Progress</span>
+          <span style={{ fontSize: "14px", color: "#333" }}>Present</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
           <span style={{ width: "12px", height: "12px", backgroundColor: "#F15041", display: "inline-block", borderRadius: "2px" }}></span>
@@ -65,10 +60,13 @@ const CustomCircularProgress = ({ value, size = 100, strokeWidth = 10 }) => {
   );
 };
 
-export default function ProgressCircle() {
+// ✅ المكون الرئيسي
+export default function ProgressCircle({ data, size = 150, strokeWidth = 10 }) {
+  const percentage = parseFloat(data?.showQttendanceRate?.replace("%", "")) || 0;
+
   return (
     <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-      <CustomCircularProgress value={30} size={150} strokeWidth={8} />
+      <CustomCircularProgress percentage={percentage} size={size} strokeWidth={strokeWidth} />
     </div>
   );
 }

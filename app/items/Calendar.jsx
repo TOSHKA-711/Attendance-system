@@ -1,33 +1,23 @@
-
-
 "use client";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import dayjs from "dayjs";
-import { useState, useEffect } from "react";
 
-export default function Calendar() {
-  const [selectedDate, setSelectedDate] = useState(null);
-
-  useEffect(() => {
-    setSelectedDate(dayjs()); // Ensure date is set on the client side
-  }, []);
-
-  const handleDateChange = (newValue) => {
-    if (newValue) {
-      setSelectedDate(newValue);
-    }
-  };
-
-  if (!selectedDate) return null; // Avoid rendering until date is set
+export default function Calendar({ value, onChange }) {
+  if (!value) return null;
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateCalendar
-        value={selectedDate}
-        onChange={handleDateChange}
+        value={dayjs(value)}
+        onChange={(newValue) => {
+          if (newValue) {
+            // نحول التاريخ لـ YYYY-MM-DD ونمرره للأب
+            onChange(newValue.format("YYYY-MM-DD"));
+          }
+        }}
         sx={{
           background: "#F5F5F5",
           boxShadow: "0px 0px 11px 1px #67C587",

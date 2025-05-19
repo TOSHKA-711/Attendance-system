@@ -48,6 +48,13 @@ const Sidebar = () => {
               <FaFolder />
               Documents
             </Link>
+            <Link
+          className="cursor-pointer hover:text-[#17272F] duration-300 gugi.className flex flex-row items-center justify-start gap-5  "
+          href={"/dashboard/pages/report"}
+        >
+          <SlCalender />
+          Report
+        </Link>
           </>
         ) : (
           <>
@@ -66,13 +73,7 @@ const Sidebar = () => {
           </>
         )}
 
-        <Link
-          className="cursor-pointer hover:text-[#17272F] duration-300 gugi.className flex flex-row items-center justify-start gap-5  "
-          href={"#"}
-        >
-          <SlCalender />
-          Calender
-        </Link>
+    
         <Link
           className="cursor-pointer hover:text-[#17272F] duration-300 gugi.className flex flex-row items-center justify-start gap-5  "
           href={"#"}

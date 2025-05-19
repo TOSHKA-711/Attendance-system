@@ -25,12 +25,20 @@ const DoctorSubjects = () => {
 
   // Memoized filtered courses
   const filteredCourses = useMemo(() => {
-    return FetchedCourses.filter(
-      (course) =>
-        (!selectedDepartment || course.department === selectedDepartment) &&
-        (!selectedLevel || course.level === selectedLevel) &&
-        (!selectedSemester || course.semester === selectedSemester)
-    );
+    return FetchedCourses.filter((course) => {
+      const matchesDepartment =
+        !selectedDepartment || course.department === selectedDepartment;
+  
+      const matchesLevel = !selectedLevel || course.level === selectedLevel;
+  
+      const matchesSemester =
+        !selectedSemester ||
+        (selectedSemester === "1"
+          ? parseInt(course.semester) % 2 === 1
+          : parseInt(course.semester) % 2 === 0);
+  
+      return matchesDepartment && matchesLevel && matchesSemester;
+    });
   }, [FetchedCourses, selectedDepartment, selectedLevel, selectedSemester]);
 
   // Log filtered courses when dependencies change
@@ -106,7 +114,7 @@ const DoctorSubjects = () => {
             {semesters.map((sem) => (
               <p
                 key={sem}
-                // onClick={() => setSelectedSemester(sem)}
+                onClick={() => setSelectedSemester(sem)}
                 className={`rounded-lg py-2 px-4 cursor-pointer ${
                   selectedSemester === sem ? "bg-[#FDD05B]" : "bg-white"
                 }`}

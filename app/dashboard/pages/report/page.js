@@ -2,7 +2,7 @@
 import Calendar from "@/app/items/Calendar";
 import DashCard from "@/app/items/dashCard";
 import DashLineChart from "@/app/items/LineChart";
-import { useGetHomeReportMutation } from "@/app/Redux/features/usersApiSlice";
+import { useGetDoctorReportMutation } from "@/app/Redux/features/usersApiSlice";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ const DashHome = () => {
     new Date().toISOString().split("T")[0] // YYYY-MM-DD
   );
 
-  const [getHomeReport] = useGetHomeReportMutation();
+  const [getDoctorReport] = useGetDoctorReportMutation();
 
   useEffect(() => {
     setIsRendered(true);
@@ -24,7 +24,7 @@ const DashHome = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const response = await getHomeReport({ date: selectedDate }).unwrap();
+        const response = await getDoctorReport({ date: selectedDate }).unwrap();
         setReportData(response);
         console.log("Fetched Report:", response);
       } catch (error) {
@@ -35,7 +35,7 @@ const DashHome = () => {
     if (isRendered) {
       fetchReport();
     }
-  }, [getHomeReport, selectedDate, isRendered]);
+  }, [getDoctorReport, selectedDate, isRendered]);
 
   if (!isRendered) return null;
 

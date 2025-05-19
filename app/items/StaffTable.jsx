@@ -25,6 +25,8 @@ import {
   useDeleteStaffUserMutation,
   useGetAllUsersQuery,
 } from "../Redux/features/usersApiSlice";
+import { useDispatch } from "react-redux";
+import { setSelectedUser } from "../Redux/Slices/selectedUser";
 
 export default function StaffTable() {
   const router = useRouter();
@@ -35,6 +37,7 @@ export default function StaffTable() {
   const [deleteStaffUser, { isLoading: isDeleting }] =
     useDeleteStaffUserMutation();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -83,7 +86,10 @@ export default function StaffTable() {
   );
 
   //  Handle User Actions
-  const handleEdit = (id) => alert(`Edit user with ID: ${id}`);
+  const handleEdit = (user) => {
+    dispatch(setSelectedUser(user));
+    router.push(`/dashboard/pages/staff/details`);
+  };
 
   // Handle Delete User
   const handleDeleteUser = async (_id) => {
@@ -179,7 +185,7 @@ export default function StaffTable() {
                       key={row._id}
                       hover
                       sx={{ cursor: "pointer" }}
-                      onClick={() => router.push(`/dashboard/pages/staff/details`)}
+                      onClick={() => handleEdit(row)}
                     >
                       <TableCell align="left" sx={{ color: "#000" }}>
                         {row._id || "Loading..."}

@@ -4,7 +4,7 @@ export const usersApiSlice = createApi({
   reducerPath: "usersApi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
+      "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
     credentials: "include", //
     prepareHeaders: (headers) => {
       if (typeof window !== "undefined") {
@@ -39,6 +39,24 @@ export const usersApiSlice = createApi({
       }),
       invalidatesTags: ["Users"],
     }),
+    getHomeReport: builder.mutation({
+      query: (data) => ({
+        url: `/staffReport`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getDoctorReport: builder.mutation({
+      query: (data) => ({
+        url: `/doctorReport`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getStaffDoctorReport: builder.query({
+      query: (userId) => `/staffDoctorReport/${userId}`,
+      providesTags: ["Users"],
+    }),
   }),
 });
 
@@ -46,4 +64,7 @@ export const {
   useGetAllUsersQuery,
   useDeleteStaffUserMutation,
   useAddStaffUserMutation,
+  useGetHomeReportMutation,
+  useGetDoctorReportMutation,
+  useGetStaffDoctorReportQuery,
 } = usersApiSlice;

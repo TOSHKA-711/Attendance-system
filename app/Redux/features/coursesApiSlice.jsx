@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
   baseUrl:
-    "https://attendance-git-main-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
+    "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode",
   prepareHeaders: (headers) => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token")?.replace(/"/g, "") || "";
@@ -22,7 +22,25 @@ export const coursesApiSlice = createApi({
     getCourses: builder.query({
       query: () => "/courses",
     }),
+    deleteDoctorCourse: builder.mutation({
+      query: ({ courseId, userId }) => ({
+        url: `/users/deleteCourses/${courseId}`,
+        method: "DELETE",
+        body: userId,
+      }),
+    }),
+    addDoctorCourse: builder.mutation({
+      query: ({ courseId, userId }) => ({
+        url: `/users/addCourses`,
+        method: "POST",
+        body: { courseId, userId },
+      }),
+    }),
   }),
 });
 
-export const { useGetCoursesQuery } = coursesApiSlice;
+export const {
+  useGetCoursesQuery,
+  useDeleteDoctorCourseMutation,
+  useAddDoctorCourseMutation,
+} = coursesApiSlice;

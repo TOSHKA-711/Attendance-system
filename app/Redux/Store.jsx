@@ -4,6 +4,7 @@ import userRoleSlice from "./Slices/userRole";
 import { authApiSlice } from "./features/authApiSlice";
 import { coursesApiSlice } from "./features/coursesApiSlice";
 import selectedCourseReducer, { hydrate } from "./Slices/selectedCourseSlice.js";
+import selectedUserReducer from "./Slices/selectedUser.js";
 import { sessionApiSlice } from "./features/sessionApiSlice";
 import { attendanceApiSlice } from "./features/attendanceApiSlice";
 import { usersApiSlice } from "./features/usersApiSlice";
@@ -13,6 +14,7 @@ const Store = configureStore({
     dataUpload: dataUploadReducer,
     userRole: userRoleSlice,
     selectedCourse: selectedCourseReducer,
+    selectedUser: selectedUserReducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [coursesApiSlice.reducerPath]: coursesApiSlice.reducer,
     [sessionApiSlice.reducerPath]: sessionApiSlice.reducer,
