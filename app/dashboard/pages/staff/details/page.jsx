@@ -1,21 +1,35 @@
 "use client";
 import ProgressCircle from "@/app/items/Pregresscircle";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { CiSquareMinus } from "react-icons/ci";
 import { useSelector } from "react-redux";
-import { useAddDoctorCourseMutation, useDeleteDoctorCourseMutation } from "@/app/Redux/features/coursesApiSlice";
+import {
+  useAddDoctorCourseMutation,
+  useDeleteDoctorCourseMutation,
+} from "@/app/Redux/features/coursesApiSlice";
 import SelectCourseDialog from "@/app/items/SelecetedCourseDialog";
 import { useGetStaffDoctorReportQuery } from "@/app/Redux/features/usersApiSlice";
+import { notFound } from "next/navigation";
+export const dynamic = "force-dynamic";
 
 const Details = () => {
   // const [addedCourse, setAddedCourse] = useState();
-  const userData = useSelector((state) => state.selectedUser.user);
+  const userData = useSelector((state) => state.selectedUser?.user);
   const [deleteDoctorCourse] = useDeleteDoctorCourseMutation();
   const [addDoctorCourse] = useAddDoctorCourseMutation();
-  const {data:doctorReport} = useGetStaffDoctorReportQuery(userData._id)
-  console.log(userData);
-  console.log(doctorReport);
+  const userId = userData?._id;
+  const { data: doctorReport } = useGetStaffDoctorReportQuery(userId, {
+    skip: !userId,
+  });
+
+  if (!userData) {
+    return (
+      <div className="p-6 text-center text-gray-600">
+        No staff member selected.
+      </div>
+    );
+  }
 
   const handleDeleteCourse = async (courseId) => {
     try {
@@ -39,7 +53,6 @@ const Details = () => {
       console.log("❌ Error details:", error?.data || error);
     }
   };
-  
 
   return (
     <div className="details w-full flex flex-col gap-6 items-start mb-5">
@@ -54,13 +67,15 @@ const Details = () => {
           />
         </div>
         <span className="flex flex-col items-center gap-3">
-          <h1 className="text-4xl font-bold">{userData.name}</h1>
-          <p className="text-3xl text-gray-600">{userData.lecturerRole}</p>
+          <h1 className="text-4xl font-bold">{userData?.name ?? "Unknown"}</h1>
+          <p className="text-3xl text-gray-600">
+            {userData?.lecturerRole ?? ""}
+          </p>
         </span>
         <div className="flex flex-col items-center gap-3">
           <span className="text-2xl text-gray-700">Staff ID: 2024189</span>
           <span className="flex flex-row items-center gap-9">
-            <p className="text-2xl text-gray-700">{userData.email}</p>
+            <p className="text-2xl text-gray-700">{userData?.email ?? ""}</p>
             {/* <p className="text-2xl text-gray-700">+20 1003394475</p> */}
           </span>
         </div>
@@ -74,11 +89,11 @@ const Details = () => {
             border: "1px solid",
           }}
         >
-          <button className="add absolute right-2 -top-12 flex items-center gap-2" >
-          <SelectCourseDialog addCourse={handleAddCourse}/>
+          <button className="add absolute right-2 -top-12 flex items-center gap-2">
+            <SelectCourseDialog addCourse={handleAddCourse} />
           </button>
-        
-          {userData?.lecturerCourses.map((course) => (
+
+          {userData?.lecturerCourses?.map((course) => (
             <span
               className="bg-[#FFCD4A] rounded-lg pt-7 pb-4 px-8 w-[12rem] text-center relative"
               key={course._id}
@@ -96,7 +111,7 @@ const Details = () => {
             <h1>Performance</h1>
             <p>Show: This month</p>
           </div>
-          <ProgressCircle data={doctorReport} />
+          <ProgressCircle data={doctorReport ?? []} />
         </div>
       </div>
     </div>
