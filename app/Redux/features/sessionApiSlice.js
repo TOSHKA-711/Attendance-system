@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
   baseUrl:
-    "https://attendance-system-nodejs-git-main-toshka-711s-projects.vercel.app/api/attendanceQRCode/sessions",
+    "https://attendance-eslamrazeen-eslam-razeens-projects.vercel.app/api/attendanceQRCode/sessions",
   prepareHeaders: (headers) => {
     let token = "";
     if (typeof window !== "undefined") {

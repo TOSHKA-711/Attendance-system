@@ -45,7 +45,7 @@ export default function Page() {
   
       const userRole = response.data.role === "lecturer" ? "staff" : "admin";
       const lecturerRole =
-        response.data.lecturerRole === "instructour" ? "instructor" : "assistant"; // Fixed typo
+        response.data.lecturerRole === "instructour" ? "instructor" : "assistant"; 
   
       if (response.token) {
         dispatch(setToken(response.token));
